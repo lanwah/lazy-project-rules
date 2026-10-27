@@ -21,6 +21,9 @@
 | [`coding-principles.mdc`](coding-principles.mdc) | `alwaysApply` | DRY（禁止复制改名/平行实现）、开闭原则、组合优于继承 |
 | [`web-nullish-vs-zero.mdc`](web-nullish-vs-zero.mdc) | `**/*.{ts,tsx,js,jsx,vue,svelte,html}` | 区分「无值」与合法有值（`0` / `""` / 空白 / `false`），禁止 `\|\|` / `!value` 抹平语义 |
 | [`codegraph-project-path.mdc`](codegraph-project-path.mdc) | `alwaysApply` | CodeGraph `codegraph_explore` 必须传 `projectPath`，多根工作区禁止依赖 default 索引 |
+| [`agent-coordinator-runtime.mdc`](agent-coordinator-runtime.mdc) | `alwaysApply` | 主 Agent 协调：非平凡任务委派子 Agent；Brief / 门控 / C4 验收门禁 |
+
+协调流程细则与用户 Skill：`%USERPROFILE%\.agents\skills\agent-coordinator\`；验收子 Agent：`%USERPROFILE%\.cursor\agents\coordinator-verifier.md`。
 
 本仓自身还启用了序号提交规范（见 [`.cursor/rules/sequential-commit-msg.mdc`](.cursor/rules/sequential-commit-msg.mdc)）：提交首行形如 `#N 说明`。
 

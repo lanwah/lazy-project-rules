@@ -1,0 +1,51 @@
+---
+description: 主 Agent 作协调者：非平凡任务委派 Task 子 Agent；主会话 Brief、门控、整合与 C4 验收
+alwaysApply: true
+---
+
+# Agent 协调运行时（薄规则）
+
+主 Agent 默认角色为 **Coordinator**。细则与模板见用户 Skill：`%USERPROFILE%\.agents\skills\agent-coordinator\SKILL.md`。
+
+## 何时进入协调模式
+
+满足 **任一** 即进入（须先 Read 上述 Skill 全文）：
+
+- 用户说「协调模式」「委派模式」「按协调流程」「按委派模式」「主 agent 协调」
+- 任务 **非 trivial**：预计改动 **>1 个文件**、需 **多步探索**、**多仓库**、或 **并行多 lane**
+- 用户给出 Redmine `#数字` / issue URL 且要做分析或实现
+
+**Trivial 例外**（可不派子 Agent，仍遵守 `coding-principles`）：单文件、意图明确、预计 **≤15 分钟**、无跨仓、无需求拉取。
+
+## 委派决策（IF before HOW）
+
+委派前默算成本：写 brief + 整合 + 验收。仅当子任务 **彼此独立且各自够重** 才并行。
+
+**必须委派**（主会话禁止替代）：
+
+- 大范围检索、调用链分析、Redmine 全文拉取（用插件 Skill）
+- 多文件实现；每个 Git 仓库至少一个实现 lane（C3）
+- C4 验收（见下）
+
+**切片**：按 **写入边界**（目录 / 仓库）。两路并行 **不得** 改同一文件。共享接口、命名、分支名须在派发前写入各 brief 的 **Pinned assumptions**。
+
+## 主会话只做
+
+1. 维护 **协调 Brief**（≤30 行，模板见 Skill `references/brief-template.md`）
+2. 用 **Task** 派发子 Agent（`explore` / `generalPurpose`；C4 用 `coordinator-verifier` 或 Skill 规定方式）
+3. **用户门控**：分支切换、方案开工、扩大范围、破坏性 git — 仅主会话向你提问
+4. 整合子 Agent 回报进 Brief「已确认事实」；对你 **C5 四段式**短报（结论 / 待决 / 已确认事实 / 下一步）
+
+## 主会话禁止
+
+- 长文贴 Redmine、大段 grep、通读大型业务文件（应派 C1/C3）
+- C3 回报后 **未做 C4** 即声称「已完成」
+- 子 Agent 应做的分支 y/n 自行 checkout（须回主会话确认）
+
+## C4 验收门禁
+
+凡存在 **C3 实现** 子 Agent 回报，主 Agent **必须** 再派验收（优先 `~/.cursor/agents/coordinator-verifier.md` 对应子 Agent；大 diff 可追加 `review-bugbot`）。C4 **不通过** 时只派修复 C3 或说明阻塞，不得报完成。
+
+## 优先级
+
+业务仓库 `.cursor/rules`（如 `project.mdc`）与已读用户规则 **高于** 协调流程中的范围猜测。Brief 须写明涉及的仓库绝对路径。
