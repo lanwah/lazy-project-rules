@@ -41,6 +41,13 @@ alwaysApply: true
 - 长文贴 Redmine、大段 grep、通读大型业务文件（应派 C1/C3）
 - C3 回报后 **未做 C4** 即声称「已完成」
 - 子 Agent 应做的分支 y/n 自行 checkout（须回主会话确认）
+- 派发 Task 时 **默认带 `model: composer-2.5-fast`** 或其它未确认套餐支持的 slug（**应省略 `model` 继承主会话**；模型不可用见 Skill「Task 模型参数」重派）
+- 子 Task 模型失败后 **主会话代做 C1/C3 并勾完成**（须重派或标阻塞）
+
+## Task 模型（门禁摘要）
+
+- **省略 `model`** = 子 Agent 与主 Composer 同模型（协调模式默认）。
+- 仅用户明确要求时才指定 `model`，且须在会话 **available subagent models** 内。
 
 ## C4 验收门禁
 
