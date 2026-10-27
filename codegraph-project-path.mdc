@@ -1,0 +1,54 @@
+---
+description: CodeGraph 调用必须传 projectPath，避免多根工作区查错索引
+alwaysApply: true
+---
+
+# CodeGraph：必须指定 projectPath
+
+调用 MCP `user-codegraph` / `codegraph` 的 `codegraph_explore`（及同类需选工程的 CodeGraph 工具）时，**必须**传入 `projectPath`（目标仓库或该仓库内任意子目录的**绝对路径**）。**禁止**省略 `projectPath`。
+
+## MCP 配置（无默认工程 / gateway）
+
+全局 `~/.cursor/mcp.json` 中 CodeGraph **仅** `serve --mcp`，**不得**再写 `--path` / `${workspaceFolder}`：
+
+```json
+"args": ["serve", "--mcp"]
+```
+
+效果：服务端无固定 default 时，工具 schema 将 `projectPath` 标为 **required**，每次调用必须显式指定要查的索引。
+
+修改 `mcp.json` 后须在 Cursor **重启 CodeGraph MCP**（或重载窗口），否则仍可能沿用旧进程。
+
+## 原因
+
+- 曾用 `--path ${workspaceFolder}` 时，省略 `projectPath` 会走会话 **default project**；多仓 / 进程未随工作区切换时易查错索引。
+- 已验证：不传 `projectPath` 可能命中完全无关的工程，返回错误符号与源码。
+
+## 常用 `projectPath`
+
+| 仓库 | `projectPath` |
+|------|----------------|
+| EverythingLabeled | `D:\Projects\Other\EverythingLabeled` |
+| 移动护理 nis | `D:\Work\Git\NIS_SE\NIS_Gch_SE\React\nursing-nis-app` |
+| 护理平台 plat | `D:\Work\Git\NIS_SE\NIS_Gch_SE\React\nursing-plat-app` |
+
+其它仓库：传该仓根目录（或含 `.codegraph/` 的最近父目录）的绝对路径。
+
+## 调用约定
+
+1. 根据当前任务涉及的代码仓选定 `projectPath`；跨仓对比时**分次调用**，每次一个 `projectPath`。
+2. `query` 仍写符号名、文件路径或自然语言；**不要**用 `question` 等非 schema 字段。
+3. 返回含 `⚠ changed on disk after the last index sync` 时，对该文件用 `Read` 或以磁盘为准。
+
+```json
+// ✅ GOOD
+{
+  "query": "MainWindow OnSwitchToTag FocusModeInput",
+  "projectPath": "D:\\Projects\\Other\\EverythingLabeled"
+}
+
+// ❌ BAD — gateway 下缺 projectPath 或查错仓
+{
+  "query": "MainWindow.xaml.cs"
+}
+```
