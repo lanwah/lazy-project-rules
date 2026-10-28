@@ -17,6 +17,8 @@ alwaysApply: true
 
 **Trivial 例外**（可不派子 Agent，仍遵守 `coding-principles`）：单文件、意图明确、预计 **≤15 分钟**、无跨仓、无需求拉取。
 
+**协调会话锁**：用户已挂 `/agent-coordinator` 或主会话已有 **协调 Brief** 时，**整会话关闭 trivial 例外**；改业务代码、写 Redmine 说明正文 **必须**经 C3 / C5-doc 子 Agent（见 Skill「协调会话锁」「Redmine 说明」）。
+
 ## 委派决策（IF before HOW）
 
 委派前默算成本：写 brief + 整合 + 验收。仅当子任务 **彼此独立且各自够重** 才并行。
@@ -36,18 +38,23 @@ alwaysApply: true
 3. **用户门控**：分支切换、方案开工、扩大范围、破坏性 git — 仅主会话向你提问
 4. 整合子 Agent 回报进 Brief「已确认事实」；对你 **C5 四段式**短报（结论 / 待决 / 已确认事实 / 下一步）
 
+## 用户纠错 / 补充（UC）
+
+用户在主会话纠正范围或补充需求时：**只更新 Brief + 重派 C1/C3**；**禁止**主会话自行做代码探索/analysis 后贴长文。C2 汇总 **≤15 行**且内容须来自子 Agent 的 `## C1 回报`。详见 Skill「用户纠错 / 需求补充（UC）」。
+
 ## 主会话禁止
 
 - 长文贴 Redmine、大段 grep、通读大型业务文件（应派 C1/C3）
+- 用户纠错/补充后 **在主会话 DIY 探索**（须重派子 Agent）
 - C3 回报后 **未做 C4** 即声称「已完成」
 - 子 Agent 应做的分支 y/n 自行 checkout（须回主会话确认）
-- 派发 Task 时 **默认带 `model: composer-2.5-fast`** 或其它未确认套餐支持的 slug（**应省略 `model` 继承主会话**；模型不可用见 Skill「Task 模型参数」重派）
+- 派发 Task 时 **省略 `model`**，或填 `composer-2.5-fast` / 裸 `composer-2.5` / 其它非父会话 `*-medium` 的 slug（须 **显式** 传列表内与主 Agent 一致的 `*-medium`；不可用见 Skill「Task 模型参数」）
 - 子 Task 模型失败后 **主会话代做 C1/C3 并勾完成**（须重派或标阻塞）
 
 ## Task 模型（门禁摘要）
 
-- **省略 `model`** = 子 Agent 与主 Composer 同模型（协调模式默认）。
-- 仅用户明确要求时才指定 `model`，且须在会话 **available subagent models** 内。
+- 新建 Task **必须显式**传 `model`，**禁止省略**（`resume` 除外）。Explore 省略会自选更快模型，不等于继承父会话。
+- **默认 = 本轮列表里父会话对应的非 Fast `*-medium`**（如 Grok 4.6 → `cursor-grok-4.6-medium`）。**禁止**用裸 `composer-2.5` 当同模或失败回退。用户点名其它模型时才改，且须在该列表内。
 
 ## C4 验收门禁
 
